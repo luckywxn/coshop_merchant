@@ -50,6 +50,7 @@
     }">
         <thead>
             <tr data-options="{name:'sysno'}">
+                <th data-options="{name:'classifyname',align:'center'}">商品分类</th>
                 <th data-options="{name:'goodsname',align:'center'}">商品名称</th>
                 <th  data-options="{name:'goodsno',align:'center'}">商品编号</th>
                 <th  data-options="{name:'price',align:'center'}">商品价格</th>

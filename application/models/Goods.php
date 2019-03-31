@@ -33,37 +33,41 @@ class GoodsModel
     {
         $filter = array();
         if (isset($params['merchant_no']) && $params['merchant_no'] != '') {
-            $filter[] = " `merchant_no` = '{$params['merchant_no']}' ";
+            $filter[] = " g.`merchant_no` = '{$params['merchant_no']}' ";
         }
         if (isset($params['goodsname']) && $params['goodsname'] != '') {
-            $filter[] = " `goodsname` LIKE '%".$params['goodsname']."%' ";
+            $filter[] = " g.`goodsname` LIKE '%".$params['goodsname']."%' ";
         }
         if (isset($params['goodsno']) && $params['goodsno'] != '') {
-            $filter[] = " `goodsno` LIKE '%".$params['goodsno']."%' ";
+            $filter[] = " g.`goodsno` LIKE '%".$params['goodsno']."%' ";
         }
         if (isset($params['status']) && $params['status'] != '') {
-            $filter[] = " `status` = {$params['status']} ";
+            $filter[] = " g.`status` = {$params['status']} ";
         }
-        $where =" WHERE `ok_del` = 0 ";
+        $where =" WHERE g.`ok_del` = 0 ";
         if (1 <= count($filter)) {
             $where .= "AND ". implode(' AND ', $filter);
         }
 
         $result = $params;
-        $sql = "SELECT COUNT(*)  from goods $where ";
+        $sql = "SELECT COUNT(*)  from goods g $where ";
         $result['totalRow'] = $this->dbh->select_one($sql);
         $result['list'] = array();
         if ($result['totalRow'])
         {
             if( isset($params['page'] ) && $params['page'] == false){
-                $sql = "select * from goods $where ";
+                $sql = "select g.*,gc.classifyname from goods g
+                        left join goods_classify gc on gc.sysno = g.classify_sysno 
+                        $where ";
                 $arr = 	$this->dbh->select($sql);
                 $result['list'] = $arr;
             }else{
                 $result['totalPage'] =  ceil($result['totalRow'] / $params['pageSize']);
                 $this->dbh->set_page_num($params['pageCurrent'] );
                 $this->dbh->set_page_rows($params['pageSize'] );
-                $sql = "select * from goods $where ";
+                $sql = "select g.*,gc.classifyname from goods g
+                        left join goods_classify gc on gc.sysno = g.classify_sysno 
+                        $where ";
                 $arr = 	$this->dbh->select_page($sql);
                 $result['list'] = $arr;
             }

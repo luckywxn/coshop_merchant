@@ -62,7 +62,7 @@ class GoodsController extends Yaf_Controller_Abstract
         }
         $this->getView()->make('goods.edit',$params);
     }
-    
+
     /**
      *新增商品
      */
@@ -102,6 +102,25 @@ class GoodsController extends Yaf_Controller_Abstract
             'price'=>$request->getPost("price",""),
             'introduce'=>$request->getPost("introduce",""),
             'status'=>$request->getPost("status",""),
+            'updated_at'=>"=NOW()"
+        );
+        if($G->updateGood($sysno,$data)){
+            $row = $G->getGoodBySysno($sysno);
+            COMMON::result(200,'更新成功',$row);
+        }else{
+            COMMON::result(300,'更新失败');
+        }
+    }
+
+    /**
+     * 删除商品
+     */
+    public function goodsdeljsonAction(){
+        $request = $this->getRequest();
+        $sysno = $request ->getParam("sysno",'');
+        $G = new GoodsModel(Yaf_Registry :: get("db"), Yaf_Registry :: get('mc'));
+        $data = array(
+            'ok_del'=>true,
             'updated_at'=>"=NOW()"
         );
         if($G->updateGood($sysno,$data)){
