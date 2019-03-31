@@ -39,7 +39,7 @@
         dataType: 'json',
         jsonPrefix: 'obj',
         editMode: {dialog:{width:'600',height:'500',title:'商品管理',mask:true}},
-        editUrl: '/goods/goodsedit/id/{sysno}',
+        editUrl: '/goods/goodsedit/sysno/{sysno}',
         delUrl:'/goods/goodsdeljson',
         delPK:'sysno',
         paging: {pageSize:10},

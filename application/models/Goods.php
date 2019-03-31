@@ -32,6 +32,9 @@ class GoodsModel
     public function searchGoods($params)
     {
         $filter = array();
+        if (isset($params['merchant_no']) && $params['merchant_no'] != '') {
+            $filter[] = " `merchant_no` = '{$params['merchant_no']}' ";
+        }
         if (isset($params['goodsname']) && $params['goodsname'] != '') {
             $filter[] = " `goodsname` LIKE '%".$params['goodsname']."%' ";
         }
@@ -41,32 +44,88 @@ class GoodsModel
         if (isset($params['status']) && $params['status'] != '') {
             $filter[] = " `status` = {$params['status']} ";
         }
-        $where =" WHERE `isdel` = 0 ";
+        $where =" WHERE `ok_del` = 0 ";
         if (1 <= count($filter)) {
             $where .= "AND ". implode(' AND ', $filter);
         }
 
         $result = $params;
-        $sql = "SELECT COUNT(*)  from concap_goods $where ";
+        $sql = "SELECT COUNT(*)  from goods $where ";
         $result['totalRow'] = $this->dbh->select_one($sql);
         $result['list'] = array();
         if ($result['totalRow'])
         {
             if( isset($params['page'] ) && $params['page'] == false){
-                $sql = "select * from concap_company $where ";
+                $sql = "select * from goods $where ";
                 $arr = 	$this->dbh->select($sql);
                 $result['list'] = $arr;
             }else{
                 $result['totalPage'] =  ceil($result['totalRow'] / $params['pageSize']);
                 $this->dbh->set_page_num($params['pageCurrent'] );
                 $this->dbh->set_page_rows($params['pageSize'] );
-                $sql = "select * from concap_goods $where ";
+                $sql = "select * from goods $where ";
                 $arr = 	$this->dbh->select_page($sql);
                 $result['list'] = $arr;
             }
         }
 
         return $result;
+    }
+
+    /**
+     * 根据商品id查询商品信息
+     */
+    public function getGoodBySysno($sysno){
+        $sql = "SELECT * FROM goods WHERE sysno = '$sysno'";
+        return $this->dbh->select_row($sql);
+    }
+
+    /**
+     * 查询商品分类
+     */
+    public function getGoodsClassify(){
+        $sql = "SELECT * FROM goods_classify WHERE ok_del = false ";
+        return $this->dbh->select($sql);
+    }
+
+    /**
+     * 添加商品
+     */
+    public function addGood($data){
+        $this->dbh->begin();
+        try{
+            $res = $this->dbh->insert('goods', $data);
+            if (!$res) {
+                $this->dbh->rollback();
+                return false;
+            }
+
+            $this->dbh->commit();
+            return $res;
+        } catch (Exception $e) {
+            $this->dbh->rollback();
+            return false;
+        }
+    }
+
+    /**
+     * 更新商品
+     */
+    public function updateGood($sysno,$data){
+        $this->dbh->begin();
+        try {
+            $res = $this->dbh->update('goods', $data, 'sysno=' . intval($sysno));
+            if (!$res) {
+                $this->dbh->rollback();
+                return false;
+            }
+
+            $this->dbh->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->dbh->rollback();
+            return false;
+        }
     }
 
 

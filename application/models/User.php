@@ -228,9 +228,10 @@ class UserModel
      **/
     public function UserLogin($params)
     {
-        $sql = "select um.*,ums.login_password from user_member um 
+        $sql = "select um.*,ums.login_password,umm.merchant_no from user_member um 
                 left join user_member_security ums on ums.member_no = um.member_no 
-                where um.`member_status` = 1 AND um.ok_del = 0 AND um.user_name = '{$params['username']}'";
+                left join user_merchant umm on umm.member_no = um.member_no 
+                where um.member_type = 2 AND um.`member_status` = 1 AND um.ok_del = 0 AND um.user_name = '{$params['username']}'";
 
         $row = $this->dbh->select_row($sql);
 
