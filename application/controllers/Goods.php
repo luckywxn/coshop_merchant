@@ -117,17 +117,16 @@ class GoodsController extends Yaf_Controller_Abstract
      */
     public function goodsdeljsonAction(){
         $request = $this->getRequest();
-        $sysno = $request ->getParam("sysno",'');
+        $sysno = $request ->getPost("sysno",'');
         $G = new GoodsModel(Yaf_Registry :: get("db"), Yaf_Registry :: get('mc'));
         $data = array(
             'ok_del'=>true,
             'updated_at'=>"=NOW()"
         );
         if($G->updateGood($sysno,$data)){
-            $row = $G->getGoodBySysno($sysno);
-            COMMON::result(200,'更新成功',$row);
+            COMMON::result(200,'删除成功');
         }else{
-            COMMON::result(300,'更新失败');
+            COMMON::result(300,'删除失败');
         }
     }
 
